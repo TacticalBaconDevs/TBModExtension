@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="APIs\TBModExtensionAPI_v1.cs" />
     <Compile Include="ArmaString.cs" />
     <Compile Include="AsyncFncs.cs" />
     <Compile Include="DLLAPI.cs" />

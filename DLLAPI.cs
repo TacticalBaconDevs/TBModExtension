@@ -17,12 +17,15 @@ namespace TBModExtension
         protected static bool error = false;
         protected static ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
         public static ConcurrentDictionary<long, string> tasksStatus = new ConcurrentDictionary<long, string>();
+        public static ConcurrentDictionary<string, List<MethodInfo>> apiFncs = new ConcurrentDictionary<string, List<MethodInfo>>();
         protected static long taskIdCounter = 0;
         public static ExtensionCallback callback;
         public delegate int ExtensionCallback([MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string function, [MarshalAs(UnmanagedType.LPStr)] string data);
+        private static bool loaded = false;
+        private static List<string> loadedAPIs = new List<string>();
 
-        #if WIN64
-            [DllExport("RVExtensionVersion", CallingConvention = CallingConvention.Winapi)]
+#       if WIN64
+         [DllExport("RVExtensionVersion", CallingConvention = CallingConvention.Winapi)]
         #else
             [DllExport("_RVExtensionVersion@8", CallingConvention = CallingConvention.Winapi)]
         #endif
@@ -40,7 +43,63 @@ namespace TBModExtension
         {
             try
             {
+                if (loaded)
+                {
+                    output.Append("TBModExtension wurde bereits geladen!");
+                    return;
+                }
+
                 output.Append("TBModExtension wurde initalisiert und Callback erstellt!");
+                loaded = true;
+
+                foreach (string filePath in Directory.GetFiles(Directory.GetCurrentDirectory(), "TBModExtension_*.dll", SearchOption.TopDirectoryOnly))
+                {
+                    string dllName = new FileInfo(filePath).Name.Replace(".dll", "");
+                    if (dllName == "TBModExtension_x64")
+                        continue;
+                    
+                    try
+                    {
+                        Assembly DLL = Assembly.LoadFile(filePath);
+                        bool apiFound = false;
+
+                        foreach (Type apiClass in DLL.GetTypes())
+                        {
+                            if (apiClass.Name.StartsWith("TBModExtensionAPI"))
+                            {
+                                apiFound = true;
+                                int apiVersion = (int) apiClass.GetField("apiVersion").GetValue(null);
+                                string dllVersion = (string) apiClass.GetField("version").GetValue(null);
+                                
+                                switch (apiVersion)
+                                {
+                                    case 1:
+                                        if (!apiFncs.ContainsKey("syncFncsV1"))
+                                            apiFncs["syncFncsV1"] = new List<MethodInfo>();
+                                        if (!apiFncs.ContainsKey("assyncFncsV1"))
+                                            apiFncs["assyncFncsV1"] = new List<MethodInfo>();
+
+                                        apiFncs["syncFncsV1"].Add(apiClass.GetMethod("syncFncs"));
+                                        apiFncs["assyncFncsV1"].Add(apiClass.GetMethod("assyncFncs"));
+                                        break;
+                                    default:
+                                        throw new Exception("APIVersion wird nicht unterstzützt");
+                                }
+
+                                loadedAPIs.Add(dllName.ToLower());
+                                output.Append(String.Format(" - Laden der Extension '{0}' erfolgreich [Version: {1}, APIVersion: {2}]", dllName, dllVersion, apiVersion));
+                            }
+                        }
+
+                        if (!apiFound)
+                            throw new Exception("TBModExtensionAPI Klasse nicht gefunden!");
+                    }
+                    catch (Exception)
+                    {
+                        output.Append(String.Format(" - Laden der Extension '{0}' fehlgeschlagen", dllName));
+                        throw;
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -72,34 +131,56 @@ namespace TBModExtension
 
                 function = function != null ? function.ToLower() : "";
                 args = args != null ? args : new string[] {};
+                object[] cArgs = args.Select(x => ArmaString.convert2C(x)).ToArray();
 
                 if (function.Length > 0)
                 {
                     // syncrone FNCs
-                    int result = SyncFncs.execute(function, args);
+                    int result = SyncFncs.execute(function, cArgs, execCallbackAry);
                     if (result != 0)
+                    {
+                        output.Append(result > 0 ? "DONE" : "ERROR");
                         return result;
-
+                    }
+                    
+                    // wichtige reservierte CMDs
                     switch (function)
                     {
                         case "status":
-                            long taskId;
+                            if (argCount != 1 && !(cArgs[0] is double))
+                            {
+                                execCallback("error", "status: benötigt einen Parameter, taskId (Ganzzahl)");
+                                return -1;
+                            }
+                            long taskId = Convert.ToInt64(cArgs[0]);
 
-                            if (argCount >= 1 && long.TryParse(args[0], out taskId) && tasksStatus.ContainsKey(taskId))
+                            if (tasksStatus.ContainsKey(taskId))
                             {
                                 output.Append(tasksStatus[taskId]);
                                 return 1;
                             }
+                            else
+                            {
+                                output.Append("UNKNOWN_TASKID");
+                            }
                             break;
+                        case "check":
+                            if (argCount != 1 && !(cArgs[0] is string))
+                            {
+                                execCallback("error", "check: benötigt einen Parameter, dllName (String)");
+                                return -1;
+                            }
+                            string dllName = (cArgs[0] as string).ToLower().Replace(".dll", "");
+                            return (loadedAPIs.Contains(dllName) || loadedAPIs.Contains("TBModExtension_".ToLower() + dllName)) ? 1 : -1;
                         default:
                             // TaskId hochzählen und als ersten Value übergeben
                             Interlocked.Increment(ref taskIdCounter);
                             if (!tasksStatus.TryAdd(taskIdCounter, "QUEUE"))
                                 return -3;
-                            List<String> values = new List<string>();
-                            values.Add(taskIdCounter.ToString());
+                            List<object> values = new List<object>();
+                            values.Add(taskIdCounter);
                             values.Add(function);
-                            values.AddRange(args);
+                            values.AddRange(cArgs);
 
                             output.Append(taskIdCounter.ToString());
                             return ThreadPool.QueueUserWorkItem(new WaitCallback(processInput), values) ? 1 : 0;
@@ -119,29 +200,24 @@ namespace TBModExtension
             return 0;
         }
 
-        public static void execCallback(string fnc, params object[] obj)
+        public static void execCallbackAry(string fnc, params object[] obj)
         {
-            execCallback(fnc, ArmaString.toAry(obj));
+            if (obj != null & obj.Length == 1 && (obj[0] is string || obj[0] is String))
+            {
+                execCallback(fnc, obj[0] as string);
+            }
+            else
+            {
+                execCallback(fnc, ArmaString.toAry(obj));
+            }
         }
 
         public static void execCallback(string fnc, string data)
         {
-            if (callback != null)
-                callback.Invoke("TBModExtension", fnc, data);
-        }
-
-        private static void processInput(object input)
-        {
             try
             {
-                List<string> args = input as List<String>;
-                long taskId = long.Parse(args[0]);
-                string funktion = args[1];
-                args.RemoveRange(0, 2);
-
-                // async FNCs
-                tasksStatus[taskId] = AsyncFncs.execute(funktion, taskId, args) >= 0 ? "DONE" : "ERROR";
-                execCallback("task", taskId, tasksStatus[taskId]);
+                if (callback != null)
+                    callback.Invoke("TBModExtension", fnc, data);
             }
             catch (Exception e)
             {
@@ -149,12 +225,49 @@ namespace TBModExtension
             }
         }
 
-        private static void logError(Exception e)
+        private static void setTaskStatus(long taskId, string status)
+        {
+            try
+            {
+                if (!tasksStatus.ContainsKey(taskId))
+                tasksStatus[taskIdCounter] = status;
+            }
+            catch (Exception e)
+            {
+                logError(e);
+            }
+        }
+
+        private static void processInput(object input)
+        {
+            try
+            {
+                List<object> args = input as List<object>;
+                long taskId = Convert.ToInt64(args[0]);
+                string funktion = args[1] as string;
+                args.RemoveRange(0, 2);
+
+                // async FNCs
+                tasksStatus[taskId] = AsyncFncs.execute(funktion, taskId, args.ToArray(), execCallbackAry, setTaskStatus) >= 0 ? "DONE" : "ERROR";
+                execCallbackAry("task", taskId, funktion, tasksStatus[taskId]);
+            }
+            catch (Exception e)
+            {
+                logError(e);
+            }
+        }
+
+        public static void logError(Exception e)
+        {
+            logError(null, e);
+        }
+
+        public static void logError(string input, Exception e)
         {
             _readWriteLock.EnterWriteLock();
             try
             {
-                string text = string.Format("[{0}][ERROR] {1} -> {2}\n", DateTime.Now.ToString("dd.MM.yyyy HH.mm.ss"), e.Message, e);
+                string text = string.Format("[{0}][ERROR] {1} -> {2}\n", DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss"), input == null ? e.Message : null, e);
                 execCallback("error", text);
                 File.AppendAllText("TBModExtention_ERRORS.log", text, Encoding.UTF8);
             }

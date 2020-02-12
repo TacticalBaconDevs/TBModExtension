@@ -18,12 +18,17 @@ namespace TBModExtension
 
         public static string getStr(string text)
         {
-            return text.Trim().Replace("\"", "").Trim();
+            return text.Trim().Substring(1, text.Trim().Length - 2).Trim();
         }
 
-        public static string[] getAry(string text)
+        public static object[] getAry(string text)
         {
-            return text.Trim().Replace("\"", "").Replace("[", "").Replace("]", "").Trim().Split(',').Select(element => element.Trim()).ToArray();
+            string array = text.Trim().Substring(1, text.Trim().Length - 2).Trim();
+            
+            //List<object> result = new List<object>();
+            // TODO: Komma in Strings sind derzeit BÖSE
+
+            return array.Split(',').Select(element => convert2C(element.Trim())).ToArray();
         }
 
         public static string toStr(string text)
@@ -38,18 +43,36 @@ namespace TBModExtension
 
         public static string toAry(params object[] arguments)
         {
-            arguments = arguments.Select(x => {
-                if (x is string || x is String)
-                    return toStr(x as string);
-                if (x is object[])
-                    return toAry(x as object[]);
-                if (x is bool || x is Boolean)
-                    return ((x as bool) ? "true" : "false");
+            if (arguments == null)
+                return "";
 
-                return x;
-            }).ToArray();
+            arguments = arguments.Select(x => convert2Arma(x)).ToArray();
 
             return "[" + String.Join(",", arguments) + "]";
+        }
+
+        public static object convert2Arma(object value)
+        {
+            if (value is string || value is String)
+                return toStr(value as string);
+            if (value is object[])
+                return toAry(value as object[]);
+            if (value is bool || value is Boolean)
+                return ((bool)value ? "true" : "false");
+
+            return value;
+        }
+
+        public static object convert2C(string value)
+        {
+            if (value.StartsWith("\"") && value.EndsWith("\""))
+                return getStr(value);
+            if (value.StartsWith("[") && value.EndsWith("]"))
+                return getAry(value);
+            if (value == "true" || value == "false")
+                return value == "true";
+
+            return Convert.ToDouble(value.Replace(".", ","));
         }
     }
 }
