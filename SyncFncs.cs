@@ -14,7 +14,8 @@ namespace TBModExtension
             // eigene Aufrufe
             switch (fnc)
             {
-                case "test":
+                case "teststring":
+                    execCallback.Invoke("testString-Output", args);
                     return 1;
             }
 
@@ -22,12 +23,15 @@ namespace TBModExtension
             string lastApiCaller = "";
             try
             {
-                foreach (MethodInfo item in DLLAPI.apiFncs["syncFncsV1"])
+                if (DLLAPI.apiFncs.ContainsKey("syncFncsV1"))
                 {
-                    lastApiCaller = item.ToString();
-                    int returnCode = (int) item.Invoke(null, new object[] { fnc, args, execCallback });
-                    if (returnCode != 0)
-                        return returnCode;
+                    foreach (MethodInfo item in DLLAPI.apiFncs["syncFncsV1"])
+                    {
+                        lastApiCaller = item.ToString();
+                        int returnCode = (int)item.Invoke(null, new object[] { fnc, args, execCallback });
+                        if (returnCode != 0)
+                            return returnCode;
+                    }
                 }
             }
             catch (Exception e)

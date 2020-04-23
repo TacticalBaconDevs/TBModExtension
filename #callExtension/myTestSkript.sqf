@@ -14,6 +14,10 @@ hint "";
 
 hint "";
 
+"TBModExtension" callExtension ["teststring", [1,"test ""Test123"" huhu",2,'ha "warum" dashier',3]];
+
+//"TBModExtension" callExtension ["json", ["{""ace_medical_painsuppress"": 0, ""saved3deninventory"": false, ""uvo_allowdeathshouts"": true, ""ace_isunconscious"": false, ""ace_medical_alllogs"": [], ""cba_statemachine_state0"": ""Standby""}"]];
+
 //"TBModExtension" callExtension ["registerlogger", ["logger", 1]];
 //"TBModExtension" callExtension ["registerlogger", ["logger", "TestLog.log"]];
 

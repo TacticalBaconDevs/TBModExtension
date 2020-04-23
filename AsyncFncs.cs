@@ -28,12 +28,15 @@ namespace TBModExtension
             // externe Aufrufe
             string lastApiCaller = "";
             try {
-                foreach (MethodInfo item in DLLAPI.apiFncs["assyncFncsV1"])
+                if (DLLAPI.apiFncs.ContainsKey("assyncFncsV1"))
                 {
-                    lastApiCaller = item.ToString();
-                    int returnCode = (int)item.Invoke(null, new object[] { fnc, args, taskId, execCallback, setTaskStatus });
-                    if (returnCode != 0)
-                        return returnCode;
+                    foreach (MethodInfo item in DLLAPI.apiFncs["assyncFncsV1"])
+                    {
+                        lastApiCaller = item.ToString();
+                        int returnCode = (int)item.Invoke(null, new object[] { fnc, args, taskId, execCallback, setTaskStatus });
+                        if (returnCode != 0)
+                            return returnCode;
+                    }
                 }
             }
             catch (Exception e)

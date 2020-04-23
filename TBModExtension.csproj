@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,9 +29,10 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>WIN64</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="RGiesecke.DllExport.Metadata, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8f52d83c1a22df51, processorArchitecture=MSIL">
@@ -54,6 +57,7 @@
     <Compile Include="SyncFncs.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".editorconfig" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

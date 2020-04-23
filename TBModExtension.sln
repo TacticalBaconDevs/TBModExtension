@@ -7,6 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TBModExtension", "TBModExte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TBModExtension_Logging", "TBModExtension_Logging\TBModExtension_Logging.csproj", "{87008B6C-844C-4605-B8F2-0F979A6B5BB0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TBModExtension_Persitence", "TBModExtension_persistence\TBModExtension_Persitence.csproj", "{8EB754CC-3E17-45A1-ABB1-7AC50FDC2F37}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{209442C7-8E2D-47A6-A6F8-C8EC4C9C6D6D}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +28,10 @@ Global
 		{87008B6C-844C-4605-B8F2-0F979A6B5BB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87008B6C-844C-4605-B8F2-0F979A6B5BB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87008B6C-844C-4605-B8F2-0F979A6B5BB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EB754CC-3E17-45A1-ABB1-7AC50FDC2F37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EB754CC-3E17-45A1-ABB1-7AC50FDC2F37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EB754CC-3E17-45A1-ABB1-7AC50FDC2F37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EB754CC-3E17-45A1-ABB1-7AC50FDC2F37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

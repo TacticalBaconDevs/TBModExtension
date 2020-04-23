@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TBModExtension_Logging
 {
-    public class TBModExtensionAPI_v1
+    public class TBModExtensionAPI_Logging_v1
     {
         public const int apiVersion = 1;
         /// <summary>
@@ -18,6 +18,14 @@ namespace TBModExtension_Logging
         private static ReaderWriterLockSlim _readWriteLock = new ReaderWriterLockSlim();
         private static Dictionary<string, string> logger = new Dictionary<string, string>();
 
+        /// <summary>
+        /// SQF Code (unscheduled) wird ausgeführt, wenn die Extension erfolgreich geladen wurde
+        /// </summary>
+        /// <returns></returns>
+        public static string init()
+        {
+            return @"diag_log 'TBModExtension-extension-logging geladen!'";
+        }
 
         /// <summary>
         /// Wird aufgerufen wenn syncrone Functionen ausgelöst werden. Nichts was Lange dauert oder pausiert verwenden, nur schnelle Sachen
@@ -71,6 +79,14 @@ namespace TBModExtension_Logging
 
             return 0;
         }
+
+        /// execCallback
+        /// Parameter1: fncName, wenn anders als folgend, dann wird nur
+        ///                 - log / error - Ausgabe von allem als diag_log/systemChat | Parameter2 beliebig wird in die Message gepackt
+        ///                 - call / spawn - Ausführung des Codes | Parameter2 muss dann Code als String sein (aka. "player setPos [0,0,0]")
+        /// Parameter2: deine Argumente
+        ///                 - im Callback kommt es als _data Array mit deinen Argumenten
+        ///                 - AUSNAHME: wenn es nur ein String ist, dann ist _data im Callback nur ein String
 
         private static int callbackError(Action<string, object[]> execCallback, string errorMsg)
         {
