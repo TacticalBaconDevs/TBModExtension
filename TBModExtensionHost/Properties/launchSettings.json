@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "TBModExtensionHost": {
+      "commandName": "Project",
+      "remoteDebugEnabled": false,
+      "nativeDebugging": false
+    }
+  }
+}
