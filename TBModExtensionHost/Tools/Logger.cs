@@ -2,11 +2,11 @@
 using System.IO;
 using System.Text;
 using System.Threading;
+using TBModExtensionHost.PluginAPI;
 
-namespace TBModExtensionHost
+namespace TBModExtensionHost.Tools
 {
-
-    class Logger
+    public class Logger
     {
         protected static ReaderWriterLockSlim readWriteLock = new ReaderWriterLockSlim();
 
@@ -31,13 +31,13 @@ namespace TBModExtensionHost
                     input += " - " + getErrorMessage(e);
 
                 string text = string.Format("[{0}][ERROR] {1} -> {2}\n", DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss"), input, e);
-                HostAPI.execCallback("error", text);
+                HostAPI.execCallback(CallbackModes.ERROR, text);
                 File.AppendAllText("TBModExtention_ERRORS.log", text, Encoding.UTF8);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Fehler: " + ex);
-                HostAPI.execCallback("error", ex.ToString());
+                HostAPI.execCallback(CallbackModes.ERROR, ex.ToString());
             }
             finally
             {

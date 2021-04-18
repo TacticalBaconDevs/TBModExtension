@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace TBModExtensionHost
+namespace TBModExtensionHost.Tools
 {
     public class ArmaToolbox
     {
@@ -69,7 +69,7 @@ namespace TBModExtensionHost
                     charArray[i] = SEPARATOR;
             }
 
-            return new String(charArray).Split(SEPARATOR).Select(element => convert2C(element.Trim())).ToArray();
+            return new string(charArray).Split(SEPARATOR).Select(element => convert2C(element.Trim())).ToArray();
         }
 
         private static string convertString2Arma(string text)
@@ -82,7 +82,7 @@ namespace TBModExtensionHost
             if (arguments == null)
                 return "[]";
 
-            return "[" + String.Join(",", arguments.Select(x => convert2Arma(x)).ToArray()) + "]";
+            return "[" + string.Join(",", arguments.Select(x => convert2Arma(x)).ToArray()) + "]";
         }
 
     }

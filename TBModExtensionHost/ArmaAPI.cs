@@ -28,19 +28,10 @@ namespace TBModExtensionHost
      *      [DllExport("RVExtensionArgs", CallingConvention = CallingConvention.Winapi)]
      *      [DllExport("_RVExtensionArgs@20", CallingConvention = CallingConvention.Winapi)]
      */
-    class ArmaAPI
+    internal class ArmaAPI
     {
         public delegate int ExtensionCallback([MarshalAs(UnmanagedType.LPStr)] string name, [MarshalAs(UnmanagedType.LPStr)] string function, [MarshalAs(UnmanagedType.LPStr)] string data);
         public static ExtensionCallback callback;
-
-        private static void init()
-        {
-            // load embedded ressources
-            loadEmbedded();
-
-            // start own logic
-            HostAPI.init();
-        }
 
         [DllExport("RVExtensionRegisterCallback", CallingConvention = CallingConvention.Winapi)]
         public static void RVExtensionRegisterCallback([MarshalAs(UnmanagedType.FunctionPtr)] ExtensionCallback func)
@@ -65,6 +56,15 @@ namespace TBModExtensionHost
         public static int RvExtensionArgs(StringBuilder output, int outputSize, [MarshalAs(UnmanagedType.LPStr)] string function, [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr, SizeParamIndex = 4)] string[] args, int argCount)
         {
             return HostAPI.handleRvExtensionArgs(output, outputSize, function, args, argCount);
+        }
+
+        private static void init()
+        {
+            // load embedded ressources
+            loadEmbedded();
+
+            // start own logic
+            HostAPI.init();
         }
 
         private static void loadEmbedded()

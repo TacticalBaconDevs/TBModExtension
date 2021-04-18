@@ -8,8 +8,8 @@
     <PackageProjectUrl>https://github.com/TacticalBaconDevs/TBModExtension</PackageProjectUrl>
     <RepositoryUrl>https://github.com/TacticalBaconDevs/TBModExtension</RepositoryUrl>
     <RepositoryType></RepositoryType>
-    <AssemblyVersion>1.0.0.66</AssemblyVersion>
-    <FileVersion>1.0.0.66</FileVersion>
+    <AssemblyVersion>1.0.0.99</AssemblyVersion>
+    <FileVersion>1.0.0.99</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

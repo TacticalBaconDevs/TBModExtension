@@ -18,17 +18,12 @@ namespace TBModExtensionPlugin
     ///                 - at the callback EH it gets the _data array with your arguments<br/>
     ///                 - EXCEPTION: if it is only a string then _data is also only a string
     /// </summary>
-    public abstract class TBModExtensionAPI_v1
+    public abstract class TBModExtensionAPI : ITBModExtensionAPI
     {
-        /// <summary>
-        /// Version of this Interface
-        /// </summary>
-        public const int API_VERSION = 1;
-
         /// <summary>
         /// Version of your plugin DLL
         /// </summary>
-        public static string pluginVersion = "1.0.0";
+        public string getPluginVersion() => "1.0.0";
 
         /// <summary>
         /// The alias which connects fnc to this API plugin
@@ -51,7 +46,7 @@ namespace TBModExtensionPlugin
         /// <param name="execCallback">response callback back to Arma - more in the interface description</param>
         /// <param name="output">direct result</param>
         /// <returns>0 - nothing happend, 1 = successful, -1 = failed</returns>
-        public abstract int syncFncs(object[] args, Action<string, object[]> execCallback, StringBuilder output);
+        //public abstract int syncFncs(object[] args, Action<string, object[]> execCallback, StringBuilder output);
 
         /// <summary>
         /// This method is executed if an asynchronous function is called<br/>
@@ -63,7 +58,7 @@ namespace TBModExtensionPlugin
         /// <param name="execCallback">response callback back to Arma - more in the interface description</param>
         /// <param name="setTaskStatus">set an additional status between QUEUE and DONE/ERROR - parameter1: taskId, parameter2: status (UPPERCASE)</param>
         /// <returns>0 - nothing happend (Status: DONE), 1 = successful (Status: DONE), -1 = failed (Status: ERROR)</returns>
-        public abstract int assyncFncs(object[] args, long taskId, Action<string, object[]> execCallback, Action<long, string> setTaskStatus);
+        //public abstract int assyncFncs(object[] args, long taskId, Action<string, object[]> execCallback, Action<long, string> setTaskStatus);
 
         /// <summary>
         /// the assembly for sqf file searching in embedded resources
@@ -78,11 +73,15 @@ namespace TBModExtensionPlugin
         /// </summary>
         public string initAPI()
         {
-            StringBuilder result = new StringBuilder();
+            StringBuilder result = new StringBuilder(init());
 
-            result.AppendLine(init());
-            result.AppendLine(loadSQFFiles());
-
+            string sqfFiles = loadSQFFiles();
+            if (sqfFiles != null && sqfFiles.Length > 0)
+            {
+                result.AppendLine();
+                result.Append(loadSQFFiles());
+            }
+            
             return result.ToString();
         }
 
@@ -90,7 +89,7 @@ namespace TBModExtensionPlugin
         /// loading *.sqf files in the embedded files
         /// </summary>
         /// <returns>content of *.sqf files</returns>
-        private string loadSQFFiles()
+        public string loadSQFFiles()
         {
             StringBuilder result = new StringBuilder();
             Assembly assembly = getAssembly();
@@ -100,6 +99,7 @@ namespace TBModExtensionPlugin
                 using (Stream stream = assembly.GetManifestResourceStream(fileName))
                 using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
                 {
+                    string filenameTrimmed = fileName.Substring(fileName.IndexOf(".Resources.") + ".Resources.".Length);
                     result.AppendLine(string.Format("diag_log 'File {0} loading...';", fileName));
                     result.AppendLine(reader.ReadToEnd());
                     result.AppendLine(string.Format("diag_log 'File {0} loaded!';", fileName));
@@ -107,23 +107,6 @@ namespace TBModExtensionPlugin
             }
 
             return result.ToString();
-        }
-
-        /// <summary>
-        /// convenience function
-        /// </summary>
-        public int callbackError(Action<string, object[]> execCallback, string errorMsg)
-        {
-            execCallback.Invoke("error", new object[] { errorMsg });
-            return -1;
-        }
-
-        /// <summary>
-        /// invoke methode
-        /// </summary>
-        public static T invoke<T>(Type type, string methodenName, object[] args = null)
-        {
-            return (T)type.GetMethod(methodenName).Invoke(Activator.CreateInstance(type), args);
         }
 
     }

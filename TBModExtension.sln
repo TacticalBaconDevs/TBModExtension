@@ -12,6 +12,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtension_Inheritance"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtensionPlugin", "TBModExtensionPlugin\TBModExtensionPlugin.csproj", "{990E4A99-1AC2-4620-AD25-9C561663CEC6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtension_Network", "TBModExtension_Network\TBModExtension_Network.csproj", "{79DC52F9-1B8B-47F2-AE9E-97EA8765CC78}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TBModExtension_Logging", "TBModExtension_Logging\TBModExtension_Logging.csproj", "{70F24E39-AF77-49D8-A8A0-0A77684BDE72}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +34,14 @@ Global
 		{990E4A99-1AC2-4620-AD25-9C561663CEC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{990E4A99-1AC2-4620-AD25-9C561663CEC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{990E4A99-1AC2-4620-AD25-9C561663CEC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79DC52F9-1B8B-47F2-AE9E-97EA8765CC78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79DC52F9-1B8B-47F2-AE9E-97EA8765CC78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79DC52F9-1B8B-47F2-AE9E-97EA8765CC78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79DC52F9-1B8B-47F2-AE9E-97EA8765CC78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70F24E39-AF77-49D8-A8A0-0A77684BDE72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70F24E39-AF77-49D8-A8A0-0A77684BDE72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70F24E39-AF77-49D8-A8A0-0A77684BDE72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70F24E39-AF77-49D8-A8A0-0A77684BDE72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

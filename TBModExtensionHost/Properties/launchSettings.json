@@ -1,9 +1,12 @@
 {
   "profiles": {
     "TBModExtensionHost": {
-      "commandName": "Project",
+      "commandName": "Executable",
+      "executablePath": "\\\\nasserver\\misc\\Entwicklung\\Visual Studio 2017\\Projects\\TBModExtension\\TBModExtensionHost\\bin\\Debug\\netstandard2.0\\callExtension_x64.exe",
+      "commandLineArgs": "testSkript.sqf",
+      "workingDirectory": "\\\\nasserver\\misc\\Entwicklung\\Visual Studio 2017\\Projects\\TBModExtension\\TBModExtensionHost\\bin\\Debug\\netstandard2.0",
       "remoteDebugEnabled": false,
-      "nativeDebugging": false
+      "nativeDebugging": true
     }
   }
 }

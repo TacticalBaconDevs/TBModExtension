@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyVersion>1.0.0.69</AssemblyVersion>
+    <FileVersion>1.0.0.69</FileVersion>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>TBModExtension.pfx</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\functions.sqf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\functions.sqf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TBModExtensionHost\TBModExtensionHost.csproj" />
+  </ItemGroup>
+
+</Project>

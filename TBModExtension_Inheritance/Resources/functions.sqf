@@ -1,10 +1,17 @@
-TBExt_addConfig = {
+TBExt_addConfigRecursive = {
     params ['_config'];
     {
         ([_x, true] call BIS_fnc_returnParents) params ['_value', ['_parent', '<noParent>']];
         'TBModExtensionHost' callExtension ['inheritance', ['addEntry', [configName _config, _value, _parent]]];
+
+        [_x] call TBExt_addConfigRecursive;
     }
     forEach ('true' configClasses _config);
+};
+
+TBExt_addConfig = {
+    params ['_config'];
+    [_config] call TBExt_addConfigRecursive;
     'TBModExtensionHost' callExtension ['inheritance', ['savefile']];
 };
 
