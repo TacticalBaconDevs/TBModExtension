@@ -22,12 +22,13 @@ namespace TBModExtension_Logging
             if (!TBModExtensionAPI_Logging.logger.ContainsKey(loggerName))
             {
                 TBModExtensionAPI_Logging.logger.Add(loggerName, filename);
-                return 1;
             }
             else
             {
-                return callbackError(execCallback, string.Format("register: '{0}' ist bereits registriert", loggerName));
+                //return callbackError(execCallback, string.Format("register: '{0}' ist bereits registriert", loggerName));
             }
+
+            return 1;
         }
     }
 }

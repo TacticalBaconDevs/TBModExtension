@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyVersion>1.0.0.256</AssemblyVersion>
-    <FileVersion>1.0.0.256</FileVersion>
+    <AssemblyVersion>1.0.0.337</AssemblyVersion>
+    <FileVersion>1.0.0.337</FileVersion>
     <AssemblyName>TBModExtensionHost_x64</AssemblyName>
     <Authors>TacticalBaconDevs</Authors>
     <Company>TacticalBaconDevs</Company>
@@ -45,11 +45,13 @@
     <None Remove="Resources\Newtonsoft.Json.dll" />
     <None Remove="Resources\Shukari.Dependency.dll" />
     <None Remove="Resources\System.Management.Automation.dll" />
+    <None Remove="Resources\TacticalBaconRootCA.cer" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\functions.sqf" />
     <EmbeddedResource Include="Resources\Newtonsoft.Json.dll" />
     <EmbeddedResource Include="Resources\System.Management.Automation.dll" />
+    <EmbeddedResource Include="Resources\TacticalBaconRootCA.cer" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.PowerShell.5.ReferenceAssemblies" Version="1.1.0" />

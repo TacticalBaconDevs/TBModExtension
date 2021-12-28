@@ -11,7 +11,7 @@ namespace TBModExtensionHost.PluginAPI
         /// <summary>
         /// Arma can send max this bytes to the engine
         /// </summary>
-        protected const int outputSize = 10240 - 1;
+        protected const int OUTPUT_SIZE = 10240 - 1;
 
         /// <summary>
         /// The name of the command

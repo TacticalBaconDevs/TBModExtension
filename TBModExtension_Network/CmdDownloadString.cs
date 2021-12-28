@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Text;
+using TBModExtensionHost;
 using TBModExtensionHost.PluginAPI;
 
 namespace TBModExtension_Network
@@ -23,8 +24,10 @@ namespace TBModExtension_Network
                 {
                     client.Encoding = Encoding.UTF8;
                     string downloadString = client.DownloadString(url);
-                    TBModExtensionAPI_Network.cache.TryAdd(taskId, downloadString);
-                    //execCallback.Invoke("downloadString", new object[] { downloadString });
+
+                    MultiMessageCache.addToCache(taskId.ToString(), downloadString);
+                    //TBModExtensionAPI_Network.cache.TryAdd(taskId, downloadString);
+
                     return 1;
                 }
             }

@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyVersion>1.0.0.218</AssemblyVersion>
-    <FileVersion>1.0.0.218</FileVersion>
+    <AssemblyVersion>1.0.0.294</AssemblyVersion>
+    <FileVersion>1.0.0.294</FileVersion>
     <AssemblyName>TBModExtension_Inheritance</AssemblyName>
     <Authors>TacticalBaconDevs</Authors>
     <Company>TacticalBaconDevs</Company>

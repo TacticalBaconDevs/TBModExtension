@@ -1,2 +1,2 @@
 call ###COPY.bat
-start callExtension_x64.exe
+start callExtension_x64.exe startSkript.sqf

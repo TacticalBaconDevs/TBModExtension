@@ -5,14 +5,14 @@ namespace TBModExtensionHost
 {
     public class TBModExtensionAPI_Host : TBModExtensionAPI
     {
-        public override string init()
-        {
-            return @"diag_log 'TBModExtensionHost wurde initalisiert!';";
-        }
-
         public override string getAlias()
         {
             return "host";
+        }
+
+        public override string init()
+        {
+            return @"diag_log 'TBModExtensionHost wurde initalisiert!';";
         }
 
         protected override Assembly getAssembly()

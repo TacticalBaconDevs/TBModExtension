@@ -11,9 +11,9 @@ using TBModExtensionHost.Tools;
 
 namespace TBModExtensionHost
 {
-    class HostAPI
+    internal class HostAPI
     {
-        public const int outputSize = 10240 - 1;
+        public const int OUTPUT_SIZE = 10240 - 1;
         protected static bool error = false;
         protected static long taskIdCounter = 0;
         private static bool loaded = false;
@@ -38,9 +38,7 @@ namespace TBModExtensionHost
             try
             {
                 function = function != null ? function.ToLower() : null;
-
-                // TODO: reloading of assemblies, need to unload before
-                bool reload = false; // "reload".Equals(function);
+                bool reload = "reload".Equals(function, StringComparison.CurrentCultureIgnoreCase);
 
                 if (loaded && !reload)
                 {
@@ -50,31 +48,35 @@ namespace TBModExtensionHost
                 }
 
                 loaded = true;
-                StringBuilder sb = new StringBuilder((reload ? "TBModExtension reloaded!" : "TBModExtension is now active and callback is created!"));
-                pluginLoader.embeddedDlls.TryAdd("tbmodextensionhost_x64.dll", Assembly.GetExecutingAssembly());
+                StringBuilder outputSb = new StringBuilder(reload ? "TBModExtension reloaded!" : "TBModExtension is now active and callback is created!");
 
                 // Load from Arma3.exe dir and dll location
+                string hostLocation = Assembly.GetExecutingAssembly().Location;
                 HashSet<string> files = new HashSet<string>();
-                foreach (string item in new string[] { "TBModExtensionHost_x64.dll", "TBModExtension_*.dll" })
+
+                // dont reload host commands
+                if (!reload)
+                    files.Add(hostLocation);
+
+                foreach (string item in new List<string> { "TBModExtension_*.dll" })
                 {
                     files.UnionWith(Directory.GetFiles(Directory.GetCurrentDirectory(), item, SearchOption.TopDirectoryOnly));
-                    files.UnionWith(Directory.GetFiles(new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName, item, SearchOption.TopDirectoryOnly));
+                    files.UnionWith(Directory.GetFiles(new FileInfo(hostLocation).DirectoryName, item, SearchOption.TopDirectoryOnly));
                 }
 
                 // try to load files
                 foreach (string filePath in files)
                 {
-                    string dllName = new FileInfo(filePath).Name.Replace(".dll", "").ToLower();
-
                     // load API defined stuff
-                    string pluginInitCode = pluginLoader.loadPlugin(dllName, filePath, ref sb);
+                    string pluginInitCode = pluginLoader.loadPlugin(filePath, ref outputSb);
                     if (pluginInitCode != null)
                         initCode += "\n" + pluginInitCode;
                 }
 
                 execCallback(CallbackModes.CALL, initCode);
-                output.Append(sb.ToString());
-                output.Length = outputSize;
+
+                string resultText = outputSb.ToString();
+                output.Append(resultText.Length <= OUTPUT_SIZE ? resultText : resultText.Substring(0, OUTPUT_SIZE));
             }
             catch (Exception e)
             {
@@ -93,7 +95,7 @@ namespace TBModExtensionHost
                 // input management
                 alias = alias != null ? alias.ToLower() : "";
                 args = args != null ? args : Array.Empty<string>();
-                object[] convertsArgs = args.Select(x => ArmaToolbox.convert2C(x)).ToArray();
+                object[] convertsArgs = args.Select(x => ArmaUtils.convert2C(x)).ToArray();
 
                 // value checking
                 if (alias.Length <= 0)
@@ -104,7 +106,7 @@ namespace TBModExtensionHost
                     return errorReturn(ErrorCode.TOO_MUCH_ARGS, output);
                 if (!(convertsArgs[0] is string))
                     return errorReturn(ErrorCode.WRONG_CMD_TYPE, output);
-                if (!pluginLoader.aliasAPIs.Contains(alias))
+                if (!pluginLoader.plugins.Keys.Any(x => x.Equals(alias, StringComparison.CurrentCultureIgnoreCase)))
                     return errorReturn(ErrorCode.UNKNOWN_ALIAS, output);
 
                 // read cmd name and mode
@@ -112,13 +114,13 @@ namespace TBModExtensionHost
                 bool isSync = !cmdName.StartsWith("#");
                 if (!isSync)
                     cmdName = cmdName.Substring(1);
-                //convertsArgs = convertsArgs.Skip(1).ToArray();
 
                 // read argument
+                //convertsArgs = convertsArgs.Skip(1).ToArray();
                 object functionArgs = argCount == 2 ? convertsArgs[1] : null;
 
                 // read cmd
-                TBModExtensionCommand cmd = pluginLoader.getCmd(alias, /*isSync,*/ cmdName);
+                TBModExtensionCommand cmd = pluginLoader.getCmd(alias, cmdName);
                 if (cmd == null)
                     return errorReturn(ErrorCode.UNKNOWN_CMD, output);
                 if (cmd.isSync() != isSync)
@@ -191,7 +193,7 @@ namespace TBModExtensionHost
                 }
                 else
                 {
-                    data = ArmaToolbox.convert2Arma(objArray);
+                    data = ArmaUtils.convert2Arma(objArray);
                 }
 
                 if (ArmaAPI.callback != null)
@@ -200,32 +202,19 @@ namespace TBModExtensionHost
                     string multipartId = null;
 
                     // debug test
-                    while (data.Length >= outputSize)
+                    while (data.Length >= OUTPUT_SIZE)
                     {
                         if (multipartId == null)
                             multipartId = "_" + Convert.ToString(new Random().Next(999999));
 
-                        string part = data.Substring(0, outputSize);
-                        data = data.Substring(outputSize);
+                        string part = data.Substring(0, OUTPUT_SIZE);
+                        data = data.Substring(OUTPUT_SIZE);
 
                         ArmaAPI.callback.Invoke("TBModExtension", "MULTIPART".ToLower() + multipartId, part);
                     }
 
                     ArmaAPI.callback.Invoke("TBModExtension", Enum.GetName(typeof(CallbackModes), mode).ToLower() + multipartId, data);
                 }
-            }
-            catch (Exception e)
-            {
-                Logger.logError(e);
-            }
-        }
-
-        private static void setTaskStatus(long taskId, string status)
-        {
-            try
-            {
-                //if (!tasksStatus.ContainsKey(taskId))
-                tasksStatus[taskIdCounter] = status.ToUpper();
             }
             catch (Exception e)
             {

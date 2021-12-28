@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using TBModExtensionHost.PluginAPI;
 
@@ -12,12 +13,12 @@ namespace TBModExtensionHost.API
 
         public override int execute(object argument, Action<CallbackModes, object[]> execCallback, StringBuilder output, long taskId)
         {
-            string inputName = argument is string ? argument as string : null;
-            if (inputName == null)
-                return callbackError(execCallback, "check: benötigt einen Parameter, dllName (String)");
+            string alias = argument is string ? argument as string : null;
+            if (alias == null)
+                return callbackError(execCallback, "check: benötigt einen Parameter, aliasName (String)");
 
-            string dllName = inputName.ToLower().Replace(".dll", "");
-            bool knownDll = HostAPI.pluginLoader.aliasAPIs.Contains(dllName) || HostAPI.pluginLoader.loadedAPIs.Contains(dllName) || HostAPI.pluginLoader.loadedAPIs.Contains("TBModExtension_".ToLower() + dllName);
+            StringComparison comp = StringComparison.CurrentCultureIgnoreCase;
+            bool knownDll = HostAPI.pluginLoader.plugins.Keys.Any(x => x.Equals(alias, comp) || x.Equals("TBModExtension_" + alias, comp));
 
             output.Append(knownDll ? "YES" : "NO");
             return knownDll ? 1 : -1;

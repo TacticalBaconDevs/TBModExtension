@@ -4,11 +4,12 @@ hint "############################"
 hint "MainExtension FNCs"
 hint "############################"
 "TBModExtensionHost" callExtension ["host", ["status", 1]];
-"TBModExtensionHost" callExtension ["host", ["check", "TBModExtension_Inheritance"]];
-"TBModExtensionHost" callExtension ["host", ["check", "inheritance"]];
+"TBModExtensionHost" callExtension ["host", ["check", "logging"]];
+"TBModExtensionHost" callExtension ["host", ["check", "TBModExtension_inheritance"]];
 "TBModExtensionHost" callExtension ["host", ["check", "pluginUnknown"]];
 "TBModExtensionHost" callExtension ["host", ["check", "host"]];
-"TBModExtensionHost" callExtension ["host", ["teststring", [1, "test ""Test123"" huhu", 2, 'ha "warum" dashier', 3]]];
+//"TBModExtensionHost" callExtension ["host", ["teststring", [1, "test ""Test123"" huhu", 2, 'ha "warum" dashier', 3]]];
+"TBModExtensionHost" callExtension ["host", ["teststring", "benötige Infos"]];
 
 
 hint "############################"
@@ -28,13 +29,14 @@ sleep 4;
 "TBModExtensionHost" callExtension ["host", ["status", 3]];
 
 
-//hint "############################"
-//systemChat "Logger";
-//hint "############################"
-//"TBModExtensionHost" callExtension ["registerlogger", ["logger", 1]];
-//"TBModExtensionHost" callExtension ["registerlogger", ["logger", "TestLog.log"]];
-//"TBModExtensionHost" callExtension ["logger", ["logger", "INFO", 1]];
-//"TBModExtensionHost" callExtension ["logger", ["logger", "INFO", "Test123"]];
+hint "############################"
+systemChat "Logging";
+hint "############################"
+"TBModExtensionHost" callExtension ["logging", ["register", ["TestLogger", "#TestLog.log"]]];
+"TBModExtensionHost" callExtension ["logging", ["#log", ["TestLogger", "TEST", "Test123"]]];
+"TBModExtensionHost" callExtension ["logging", ["#log", ["TestLogger", "TEST", "Test456"]]];
+"TBModExtensionHost" callExtension ["logging", ["#log", ["TestLogger", "PVP_KILLED", "Gen. Shukari(B_Soldier_lite_F) von Gen. Shukari(B_Soldier_lite_F) durch #scripted  --->  [bob2,""#scripted"",bob2,<NULL-object>]"]]]
+
 
 
 hint "############################"
@@ -53,8 +55,7 @@ hint "############################"
 hint "############################"
 hint "network";
 hint "############################"
-"TBModExtensionHost" callExtension "-";
 "TBModExtensionHost" callExtension ["network", ["#downloadString", "https://raw.githubusercontent.com/TacticalBaconDevs/MainCore-Layout/master/TB_MAINCORE.VR/stuff/defaultSettings.txt"]];
-"TBModExtensionHost" callExtension ["network", ["getDownloadString", 1]];
+"TBModExtensionHost" callExtension ["host", ["getCache", 1]];
 
 freeExtension "TBModExtensionHost"

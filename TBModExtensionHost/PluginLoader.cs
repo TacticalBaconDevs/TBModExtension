@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Management.Automation;
-using System.Management.Automation.Runspaces;
 using System.Reflection;
-using System.Security.Cryptography;
 using System.Text;
 using TBModExtensionHost.PluginAPI;
 using TBModExtensionHost.Tools;
@@ -15,155 +11,117 @@ namespace TBModExtensionHost
 {
     internal class PluginLoader
     {
-        public volatile List<string> loadedAPIs = new List<string>();
-        public volatile List<string> aliasAPIs = new List<string>();
-        public ConcurrentDictionary<string, Assembly> embeddedDlls = new ConcurrentDictionary<string, Assembly>();
-        public ConcurrentDictionary<string, List<TBModExtensionCommand>> apiFncs = new ConcurrentDictionary<string, List<TBModExtensionCommand>>();
+        public ConcurrentDictionary<string, Plugin> plugins = new ConcurrentDictionary<string, Plugin>();
+        private const int NEEDED_TRUSTLVL = 3;
 
-        public void addCmd(string alias, TBModExtensionCommand command)
+        //public volatile Dictionary<string, Version> aliasAPIs = new Dictionary<string, Version>();
+        //public ConcurrentDictionary<string, Assembly> embeddedDlls = new ConcurrentDictionary<string, Assembly>();
+        //public ConcurrentDictionary<string, List<TBModExtensionCommand>> apiFncs = new ConcurrentDictionary<string, List<TBModExtensionCommand>>();
+
+        public string loadPlugin(string filePath, ref StringBuilder outputSb)
         {
-            List<TBModExtensionCommand> commands = apiFncs.GetOrAdd(alias, new List<TBModExtensionCommand>());
-            commands.Add(command);
-        }
-
-        public TBModExtensionCommand getCmd(string alias/*, bool isSync*/, string fncName)
-        {
-            if (!apiFncs.TryGetValue(alias, out List<TBModExtensionCommand> commands))
-                return null;
-
-            return commands.FirstOrDefault(cmd => /*cmd.isSync() == isSync &&*/ cmd.getName().Equals(fncName, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public Assembly pluginAssemblyResolve(string name)
-        {
-            string dllName = (new AssemblyName(name).Name + ".dll").ToLower();
-
-            if (embeddedDlls.ContainsKey(dllName))
-                return embeddedDlls[dllName];
-
-            return null;
-        }
-
-        public bool checkSignedPlugin(Assembly DLL, string filePath)
-        {
-            int trustLevel = 0;
+            // get the name of the dll without extension
+            string dllName = new FileInfo(filePath).Name.Replace(".dll", "").ToLower();
 
             try
             {
-                Signature signature = getSignature(filePath);
-                if (signature != null)
+                // load Host normal but plugins as reference
+                Assembly dll = null;
+                if (Assembly.GetExecutingAssembly().Location.Equals(filePath))
                 {
-                    if (signature.Status == SignatureStatus.NotTrusted && "CN=TacticalBaconRootCA, O=TacticalBacon.de, OU=TacticalBaconDevs, E=kontakt@tacticalbacon.de".Equals(signature.SignerCertificate.Issuer) &&
-                            "7F225134E91038284C1E69C7CB896077D04BB7FD".Equals(signature.SignerCertificate.Thumbprint))
-                        trustLevel += 1;
-                    if (signature.Status == SignatureStatus.Valid)
-                        trustLevel += 2;
-                }
-
-                // check the signature first
-                byte[] key = DLL.GetName().GetPublicKeyToken();
-                if (key.Length > 0 && "912aa95efe157609".Equals(getHash(key)))
-                    trustLevel += 1;
-            }
-            catch (Exception e)
-            {
-                Logger.logError(e);
-            }
-
-            return trustLevel >= 2;
-        }
-
-        private string getHash(byte[] bytes)
-        {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < bytes.Length; i++)
-                builder.Append(bytes[i].ToString("x2"));
-            return builder.ToString();
-        }
-
-        public static Signature getSignature(string filepath)
-        {
-            using (Runspace runspace = RunspaceFactory.CreateRunspace(RunspaceConfiguration.Create()))
-            {
-                runspace.Open();
-                using (var pipeline = runspace.CreatePipeline())
-                {
-                    pipeline.Commands.AddScript("Get-AuthenticodeSignature -FilePath \"" + filepath + "\"");
-                    var results = pipeline.Invoke();
-                    runspace.Close();
-
-                    var signature = results[0].BaseObject as Signature;
-                    return signature == null || signature.SignerCertificate == null ? null : signature;
-                }
-            }
-        }
-
-        public string loadPlugin(string dllName, string filePath, ref StringBuilder sb)
-        {
-            if (loadedAPIs.Contains(dllName))
-            {
-                sb.AppendLine(string.Format(" - Cant load plugin '{0}' is already loaded [path: {1}]", dllName, filePath));
-                return null;
-            }
-
-            // Extension vars
-            string extensionAlias = null;
-            string initCode = null;
-
-            try
-            {
-                Assembly DLL = Assembly.LoadFile(filePath);
-
-                if (!checkSignedPlugin(DLL, filePath))
-                {
-                    sb.AppendLine(string.Format(" - Cant load plugin '{0}' trustlevel not high enough [path: {1}]", dllName, filePath));
-                    return null;
-                }
-
-                Type typeAPI = DLL.GetTypes().FirstOrDefault(type => typeof(TBModExtensionAPI).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface);
-                TBModExtensionAPI extensionAPI = typeAPI != null ? Activator.CreateInstance(typeAPI) as TBModExtensionAPI : null;
-                //extensionAPI = extensionAPI == null ? DLL.CreateInstance(typeAPI.FullName) as TBModExtensionAPI : extensionAPI;
-                if (extensionAPI != null)
-                {
-                    extensionAlias = extensionAPI.getAlias().ToLower();
-
-                    foreach (KeyValuePair<string, Assembly> dependencies in extensionAPI.loadPluginDependencies())
-                        embeddedDlls.TryAdd(dependencies.Key, dependencies.Value);
-
-                    initCode = extensionAPI.initAPI();
+                    dll = Assembly.LoadFile(filePath);
                 }
                 else
                 {
-                    // DLL hat keine API Klasse
+                    dll = Assembly.Load(File.ReadAllBytes(filePath));
+                }
+
+                if (!checkSignedPlugin(dll, filePath))
+                {
+                    outputSb.AppendLine(string.Format(" - Cant load plugin '{0}' trustlevel not high enough [path: {1}]", dllName, filePath));
                     return null;
                 }
 
-                // Commands laden
-                foreach (Type typeCmd in DLL.GetTypes().Where(type => typeof(TBModExtensionCommand).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface).ToList())
+                // load plugin informations
+                Plugin newPlugin = new Plugin(dll);
+                if (!newPlugin.fetchFromApi())
+                    return null; // DLL hat keine API Klasse
+
+                // check if the version is there or newer
+                plugins.TryGetValue(newPlugin.alias, out Plugin loadedPlugin);
+                if (loadedPlugin != null && loadedPlugin.version >= newPlugin.version)
                 {
-                    TBModExtensionCommand command = Activator.CreateInstance(typeCmd) as TBModExtensionCommand;
-                    //command = command == null ? DLL.CreateInstance(typeCmd.FullName) as TBModExtensionCommand : command;
-                    addCmd(extensionAlias, command);
+                    outputSb.AppendLine(string.Format("- Plugin '{0}' is allready loaded [Alias: {1}, Version: {2}, location: {3}]", dllName, newPlugin.alias, newPlugin.version, filePath));
+                    return null;
                 }
 
-                // finalise loading
-                loadedAPIs.Add(dllName);
-                aliasAPIs.Add(extensionAlias);
-                sb.AppendLine(string.Format("- Plugin '{0}' successful loaded [Alias: {1}, location: {2}]", dllName, extensionAlias, filePath));
+                outputSb.AppendLine(string.Format("- Plugin '{0}' successful {4}loaded [Alias: {1}, Version: {2}, location: {3}]", dllName, newPlugin.alias, newPlugin.version, filePath, loadedPlugin != null ? "re" : ""));
+                plugins.AddOrUpdate(newPlugin.alias, newPlugin, (k, v) => newPlugin);
 
                 // execute SQF code
-                if (initCode != null)
-                    HostAPI.execCallback(CallbackModes.CALL, initCode);
-                
-                return initCode;
+                if (newPlugin.initCode != null)
+                    HostAPI.execCallback(CallbackModes.CALL, newPlugin.initCode);
+
+                return newPlugin.initCode;
             }
             catch (Exception e)
             {
                 string msg = string.Format("- Extension '{0}' cant be loaded -> {1}", dllName, e.Message);
-                sb.AppendLine(msg);
+                outputSb.AppendLine(msg);
                 Logger.logError(msg, e);
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Check if the assembly is a verified one
+        /// </summary>
+        public bool checkSignedPlugin(Assembly dll, string filePath)
+        {
+            int trustLevel = 0;
+
+            // check the signature of the file
+            if (SignUtils.checkSignature(filePath))
+                trustLevel += 1;
+
+            // check the file cert
+            if (SignUtils.checkFile(filePath))
+                trustLevel += 1;
+
+            // check strongname of dll
+            if (SignUtils.checkWithWindowsLib(filePath))
+                trustLevel += 1;
+
+            return trustLevel >= NEEDED_TRUSTLVL;
+        }
+
+        /// <summary>
+        /// Tries to get a command from the apiFncs
+        /// </summary>
+        public TBModExtensionCommand getCmd(string alias, string fncName)
+        {
+            plugins.TryGetValue(alias, out Plugin plugin);
+            if (plugin == null)
+                return null;
+
+            return plugin.commands.FirstOrDefault(cmd => cmd.getName().Equals(fncName, StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        /// <summary>
+        /// Tries to load an embeddedDll from an plugin
+        /// </summary>
+        public Assembly pluginAssemblyResolve(string name)
+        {
+            string dllName = (new AssemblyName(name).Name + ".dll").ToLower();
+
+            if (Assembly.GetExecutingAssembly().GetName().Name.Equals(name, StringComparison.CurrentCultureIgnoreCase))
+                return Assembly.GetExecutingAssembly();
+
+            Plugin plugin = plugins.Values.FirstOrDefault(x => x.embeddedDlls.Any(y => y.Key.ToLower().Equals(dllName, StringComparison.CurrentCultureIgnoreCase)));
+            if (plugin != null && plugin.embeddedDlls != null)
+                return plugin.embeddedDlls[dllName];
+
+            return null;
         }
 
     }

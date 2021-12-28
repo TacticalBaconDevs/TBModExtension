@@ -20,21 +20,26 @@ namespace TBModExtension_Inheritance
             if (savename == null || config == null || parent == null)
                 return callbackError(execCallback, "checkEntry: braucht 3 Parameter - savename (String), config (String) und parent (String)");
 
-            ConcurrentDictionary<string, string> values = TBModExtensionAPI_Inheritance.saves.GetOrAdd(savename.ToLower(), new ConcurrentDictionary<string, string>());
+            savename = savename.ToLower();
+            config = config.ToLower();
+            parent = parent.ToLower();
+            ConcurrentDictionary<string, string> values = TBModExtensionAPI_Inheritance.saves.GetOrAdd(savename, new ConcurrentDictionary<string, string>());
 
-            if (!values.ContainsKey(config.ToLower()))
+            if (!values.ContainsKey(config))
             {
                 return 1;
             }
             else
             {
-                if ((values[config.ToLower()]).ToLower() == parent.ToLower())
+                if (values[config].ToLower() == parent)
                 {
                     return 1;
                 }
                 else
                 {
-                    return callbackError(execCallback, string.Format("checkEntry-{0}: value '{1}' hat original den Wert '{2}' hat beim Check aber '{3}'", savename, config, values[config.ToLower()], parent));
+                    string msg = string.Format("checkEntry-{0}: value '{1}' hat original den Wert '{2}' hat beim Check aber '{3}'", savename, config, values[config], parent);
+                    output.Append(msg);
+                    return callbackError(execCallback, msg);
                 }
             }
         }

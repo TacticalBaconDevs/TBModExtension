@@ -30,6 +30,11 @@ namespace TBModExtensionHost.PluginAPI
         /// <returns>your Assembly</returns>
         protected abstract Assembly getAssembly();
 
+        public Version getVersion()
+        {
+            return getAssembly().GetName().Version;
+        }
+
         /// <summary>
         /// This method is called if this plugin is loaded.<br/>
         /// - it calls first the init() method<br/>

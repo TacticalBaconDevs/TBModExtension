@@ -5,20 +5,17 @@ using TBModExtensionHost.PluginAPI;
 
 namespace TBModExtension_Network
 {
-    class CmdGetDownloadString : TBModExtensionCommand
+    class CmdGetCache : TBModExtensionCommand
     {
-        public override string getName() => "getdownloadstring";
+        public override string getName() => "getcache";
 
         public override bool isSync() => true;
 
         public override int execute(object argument, Action<CallbackModes, object[]> execCallback, StringBuilder output, long taskId)
         {
-            Type type = argument.GetType();
-            string type2 = type.Name;
-
             long inputTaskId = argument is long ? (long)argument : -1;
-            if (inputTaskId >= 0)
-                return callbackError(execCallback, "getDownloadString: benötigt einen Parameter, id (Ganzzahl)");
+            if (inputTaskId <= 0)
+                return callbackError(execCallback, "getCache: benötigt einen Parameter, taskId (Ganzzahl)");
 
             int result = MultiMessageCache.getFromCache(inputTaskId.ToString(), out string downloadString);
             output.Append(downloadString);

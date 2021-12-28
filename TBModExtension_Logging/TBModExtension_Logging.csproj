@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyVersion>1.0.0.29</AssemblyVersion>
-    <FileVersion>1.0.0.29</FileVersion>
+    <AssemblyVersion>1.0.0.102</AssemblyVersion>
+    <FileVersion>1.0.0.102</FileVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>TBModExtension.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
