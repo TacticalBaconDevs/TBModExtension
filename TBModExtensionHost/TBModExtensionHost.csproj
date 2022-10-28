@@ -9,7 +9,7 @@
     <Product>TBModExtensionHost</Product>
     <PackageId>TBModExtensionHost</PackageId>
     <Description>TacticalBaconDevs</Description>
-    <Copyright>Copyright © TacticalBaconDevs 2020</Copyright>
+    <Copyright>Copyright © TacticalBaconDevs 2022</Copyright>
     <PackageProjectUrl>https://github.com/TacticalBaconDevs/TBModExtension</PackageProjectUrl>
     <RepositoryUrl>https://github.com/TacticalBaconDevs/TBModExtension</RepositoryUrl>
     <!--<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>-->
@@ -18,22 +18,25 @@
     <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>full</DebugType>
+    <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
-    <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <DefineConstants></DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
   <PropertyGroup>
     <PlatformTarget>x64</PlatformTarget>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>TBModExtension.pfx</AssemblyOriginatorKeyFile>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="bin\**" />

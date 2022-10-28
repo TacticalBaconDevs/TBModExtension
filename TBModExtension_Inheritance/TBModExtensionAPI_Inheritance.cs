@@ -12,7 +12,7 @@ namespace TBModExtension_Inheritance
 
         public override string init()
         {
-            return @"diag_log ""TBModExtension-Inheritance geladen! '[_config] call TBExt_addConfig' und '[_config] call TBExt_checkConfig' wurde initalisiert!"";";
+            return @"diag_log ""TBModExtension-Inheritance geladen! '[_config] call TBExt_addConfig' und '[_config] call TBExt_checkConfig' wurde initialisiert!"";";
         }
 
         public override string getAlias()

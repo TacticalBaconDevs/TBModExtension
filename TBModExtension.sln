@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30804.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtensionHost", "TBModExtensionHost\TBModExtensionHost.csproj", "{40A7B1DB-4148-4B60-9E5A-025CC25A36A7}"
 EndProject
@@ -14,7 +14,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtensionPlugin", "TBM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtension_Network", "TBModExtension_Network\TBModExtension_Network.csproj", "{79DC52F9-1B8B-47F2-AE9E-97EA8765CC78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TBModExtension_Logging", "TBModExtension_Logging\TBModExtension_Logging.csproj", "{70F24E39-AF77-49D8-A8A0-0A77684BDE72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtension_Logging", "TBModExtension_Logging\TBModExtension_Logging.csproj", "{70F24E39-AF77-49D8-A8A0-0A77684BDE72}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtension_Highlights", "TBModExtension_Highlights\TBModExtension_Highlights.csproj", "{B8BC96BB-1AB5-4460-A60E-95D4C649E8C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +44,10 @@ Global
 		{70F24E39-AF77-49D8-A8A0-0A77684BDE72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70F24E39-AF77-49D8-A8A0-0A77684BDE72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70F24E39-AF77-49D8-A8A0-0A77684BDE72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8BC96BB-1AB5-4460-A60E-95D4C649E8C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8BC96BB-1AB5-4460-A60E-95D4C649E8C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8BC96BB-1AB5-4460-A60E-95D4C649E8C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8BC96BB-1AB5-4460-A60E-95D4C649E8C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -15,6 +15,9 @@ copy /y "TBModExtension_Network\bin\Debug\netstandard2.0\TBModExtension_Network.
 copy /y "TBModExtension_Logging\bin\Debug\netstandard2.0\TBModExtension_Logging.dll" #callExtension
 copy /y "TBModExtension_Logging\bin\Debug\netstandard2.0\TBModExtension_Logging.pdb" #callExtension
 
+copy /y "TBModExtension_Highlights\bin\Debug\netstandard2.0\TBModExtension_Highlights.dll" #callExtension
+copy /y "TBModExtension_Highlights\bin\Debug\netstandard2.0\TBModExtension_Highlights.pdb" #callExtension
+
 cd #certStuff
 call signDll.cmd
 cd ..

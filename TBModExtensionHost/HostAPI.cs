@@ -19,7 +19,7 @@ namespace TBModExtensionHost
         private static bool loaded = false;
         public static ConcurrentDictionary<long, string> tasksStatus = new ConcurrentDictionary<long, string>();
         public static PluginLoader pluginLoader = new PluginLoader();
-        public static string initCode = null;
+        public static string initCode = "";
 
         public static void init()
         {
@@ -43,7 +43,10 @@ namespace TBModExtensionHost
                 if (loaded && !reload)
                 {
                     output.Append("TBModExtension already loaded!");
-                    execCallback(CallbackModes.CALL, initCode);
+
+                    if (initCode != null && initCode != "")
+                        execCallback(CallbackModes.CALL, initCode);
+
                     return;
                 }
 
@@ -64,6 +67,9 @@ namespace TBModExtensionHost
                     files.UnionWith(Directory.GetFiles(new FileInfo(hostLocation).DirectoryName, item, SearchOption.TopDirectoryOnly));
                 }
 
+                // load user file for enable and disable plugins
+                pluginLoader.loadPluginEnableFile();
+
                 // try to load files
                 foreach (string filePath in files)
                 {
@@ -73,7 +79,10 @@ namespace TBModExtensionHost
                         initCode += "\n" + pluginInitCode;
                 }
 
-                execCallback(CallbackModes.CALL, initCode);
+                pluginLoader.savePluginEnableFile();
+
+                if (initCode != null && initCode != "")
+                    execCallback(CallbackModes.CALL, initCode);
 
                 string resultText = outputSb.ToString();
                 output.Append(resultText.Length <= OUTPUT_SIZE ? resultText : resultText.Substring(0, OUTPUT_SIZE));

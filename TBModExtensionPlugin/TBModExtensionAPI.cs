@@ -81,7 +81,7 @@ namespace TBModExtensionPlugin
                 result.AppendLine();
                 result.Append(loadSQFFiles());
             }
-            
+
             return result.ToString();
         }
 

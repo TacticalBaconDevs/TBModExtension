@@ -2,6 +2,7 @@
 {
     public enum CallbackModes
     {
+        DEBUG,
         LOG,
         ERROR,
         CALL,

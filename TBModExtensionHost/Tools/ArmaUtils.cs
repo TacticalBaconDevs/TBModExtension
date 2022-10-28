@@ -35,10 +35,10 @@ namespace TBModExtensionHost.Tools
             {
                 if (value == "" || value == "nil" || value == "any")
                     return null;
-                if (value.StartsWith("\"") && value.EndsWith("\""))
-                    return convertArma2String(value);
                 if (value.StartsWith("[") && value.EndsWith("]"))
                     return convertArma2Array(value);
+                if (value.StartsWith("\"") && value.EndsWith("\""))
+                    return convertArma2String(value);
                 if (value == "true" || value == "false")
                     return value == "true";
                 if (value.Contains("."))
@@ -74,6 +74,7 @@ namespace TBModExtensionHost.Tools
 
             // Kommas in Strings von den richtigen Separatoren unterscheiden
             char stringStart = ' ';
+            int arrayInArray = 0;
             bool arrayInStringIgnore = false;
             for (int i = 0; i < charArray.Length; i++)
             {
@@ -93,11 +94,23 @@ namespace TBModExtensionHost.Tools
                     continue;
                 }
 
+                // in einem String ein Array
                 if (stringStart != ' ' && (zeichen == '[' || zeichen == ']'))
                 {
                     arrayInStringIgnore = zeichen == '[';
                     continue;
                 }
+
+                // in einem Array ein Array
+                if (stringStart == ' ' && (zeichen == '[' || zeichen == ']'))
+                {
+                    arrayInArray += zeichen == '[' ? 1 : -1;
+                    continue;
+                }
+
+                // derzeit in Subarray
+                if (arrayInArray != 0)
+                    continue;
 
                 // Alle Kommas 
                 if (zeichen == ',' && stringStart == ' ' && !arrayInStringIgnore)

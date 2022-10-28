@@ -41,8 +41,15 @@ namespace TBModExtensionHost.Tools
 
         public static bool checkFile(string filePath)
         {
-            X509Certificate2 certFromFile = new X509Certificate2(X509Certificate.CreateFromSignedFile(filePath));
-            return isValidCert(certFromFile);
+            try
+            {
+                X509Certificate2 certFromFile = new X509Certificate2(X509Certificate.CreateFromSignedFile(filePath));
+                return isValidCert(certFromFile);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         public static Signature getSignature(string filePath)

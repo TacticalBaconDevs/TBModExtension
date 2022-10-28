@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -12,7 +14,8 @@ namespace TBModExtensionHost
     internal class PluginLoader
     {
         public ConcurrentDictionary<string, Plugin> plugins = new ConcurrentDictionary<string, Plugin>();
-        private const int NEEDED_TRUSTLVL = 3;
+        public Dictionary<string, bool> userEnabledSetting = new Dictionary<string, bool>();
+        private const int NEEDED_TRUSTLVL = 1; //3
 
         //public volatile Dictionary<string, Version> aliasAPIs = new Dictionary<string, Version>();
         //public ConcurrentDictionary<string, Assembly> embeddedDlls = new ConcurrentDictionary<string, Assembly>();
@@ -55,6 +58,13 @@ namespace TBModExtensionHost
                     return null;
                 }
 
+                // check if user disabled this plugin
+                if (!"tbmodextensionhost_x64".Equals(dllName, StringComparison.OrdinalIgnoreCase) && !checkSettingEnabled(dllName))
+                {
+                    outputSb.AppendLine(string.Format("- Plugin '{0}' is disabled by the user [Alias: {1}, Version: {2}, location: {3}]", dllName, newPlugin.alias, newPlugin.version, filePath));
+                    return null;
+                }
+
                 outputSb.AppendLine(string.Format("- Plugin '{0}' successful {4}loaded [Alias: {1}, Version: {2}, location: {3}]", dllName, newPlugin.alias, newPlugin.version, filePath, loadedPlugin != null ? "re" : ""));
                 plugins.AddOrUpdate(newPlugin.alias, newPlugin, (k, v) => newPlugin);
 
@@ -74,6 +84,40 @@ namespace TBModExtensionHost
         }
 
         /// <summary>
+        /// load file for enabled checks
+        /// </summary>
+        public void loadPluginEnableFile()
+        {
+            if (!File.Exists("TBModExtention_userEnabledSetting.json"))
+                return;
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Formatting = Formatting.Indented;
+
+            userEnabledSetting = JsonConvert.DeserializeObject<Dictionary<string, bool>>(File.ReadAllText("TBModExtention_userEnabledSetting.json"), settings);
+        }
+
+        /// <summary>
+        /// load file for enabled checks
+        /// </summary>
+        public void savePluginEnableFile()
+        {
+            File.WriteAllText("TBModExtention_userEnabledSetting.json", JsonConvert.SerializeObject(userEnabledSetting));
+        }
+
+        /// <summary>
+        /// Check if dll is allowed
+        /// </summary>
+        public bool checkSettingEnabled(string dllName)
+        {
+            // no setting set it to default
+            if (!userEnabledSetting.ContainsKey(dllName))
+                userEnabledSetting.Add(dllName, true);
+
+            return userEnabledSetting[dllName];
+        }
+
+        /// <summary>
         /// Check if the assembly is a verified one
         /// </summary>
         public bool checkSignedPlugin(Assembly dll, string filePath)
@@ -83,14 +127,20 @@ namespace TBModExtensionHost
             // check the signature of the file
             if (SignUtils.checkSignature(filePath))
                 trustLevel += 1;
+            else
+                HostAPI.execCallback(CallbackModes.DEBUG, string.Format("[DEBUG][checkSignedPlugin] SignUtils.checkSignature failed for: {0}", filePath)); // FIXME: muss wieder raus
 
             // check the file cert
             if (SignUtils.checkFile(filePath))
                 trustLevel += 1;
+            else
+                HostAPI.execCallback(CallbackModes.DEBUG, string.Format("[DEBUG][checkSignedPlugin] SignUtils.checkFile failed for: {0}", filePath)); // FIXME: muss wieder raus
 
             // check strongname of dll
             if (SignUtils.checkWithWindowsLib(filePath))
                 trustLevel += 1;
+            else
+                HostAPI.execCallback(CallbackModes.DEBUG, string.Format("[DEBUG][checkSignedPlugin] SignUtils.checkWithWindowsLib failed for: {0}", filePath)); // FIXME: muss wieder raus
 
             return trustLevel >= NEEDED_TRUSTLVL;
         }

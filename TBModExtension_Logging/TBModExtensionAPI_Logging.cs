@@ -16,7 +16,7 @@ namespace TBModExtension_Logging
 
         public override string init()
         {
-            return @"diag_log ""TBModExtension-Logging wurde initalisiert!"";";
+            return @"diag_log ""TBModExtension-Logging wurde initialisiert!"";";
         }
 
         public override string getAlias()
