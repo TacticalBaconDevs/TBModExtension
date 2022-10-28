@@ -1,18 +1,22 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29728.190
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TBModExtension", "TBModExtension.csproj", "{34756148-0694-45A6-868A-6C99FE605DDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtensionHost", "TBModExtensionHost\TBModExtensionHost.csproj", "{40A7B1DB-4148-4B60-9E5A-025CC25A36A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TBModExtension_Logging", "TBModExtension_Logging\TBModExtension_Logging.csproj", "{87008B6C-844C-4605-B8F2-0F979A6B5BB0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TBModExtension_Persitence", "TBModExtension_Persistence\TBModExtension_Persitence.csproj", "{8EB754CC-3E17-45A1-ABB1-7AC50FDC2F37}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{209442C7-8E2D-47A6-A6F8-C8EC4C9C6D6D}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtension_Inheritance", "TBModExtension_Inheritance\TBModExtension_Inheritance.csproj", "{393EF512-431C-4509-ACDE-9B75591B6B6A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{40A7B1DB-4148-4B60-9E5A-025CC25A36A7} = {40A7B1DB-4148-4B60-9E5A-025CC25A36A7}
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtensionPlugin", "TBModExtensionPlugin\TBModExtensionPlugin.csproj", "{990E4A99-1AC2-4620-AD25-9C561663CEC6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtension_Network", "TBModExtension_Network\TBModExtension_Network.csproj", "{79DC52F9-1B8B-47F2-AE9E-97EA8765CC78}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtension_Logging", "TBModExtension_Logging\TBModExtension_Logging.csproj", "{70F24E39-AF77-49D8-A8A0-0A77684BDE72}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TBModExtension_Highlights", "TBModExtension_Highlights\TBModExtension_Highlights.csproj", "{B8BC96BB-1AB5-4460-A60E-95D4C649E8C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,23 +24,35 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{34756148-0694-45A6-868A-6C99FE605DDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{34756148-0694-45A6-868A-6C99FE605DDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{34756148-0694-45A6-868A-6C99FE605DDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{34756148-0694-45A6-868A-6C99FE605DDB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{87008B6C-844C-4605-B8F2-0F979A6B5BB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{87008B6C-844C-4605-B8F2-0F979A6B5BB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{87008B6C-844C-4605-B8F2-0F979A6B5BB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{87008B6C-844C-4605-B8F2-0F979A6B5BB0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8EB754CC-3E17-45A1-ABB1-7AC50FDC2F37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8EB754CC-3E17-45A1-ABB1-7AC50FDC2F37}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8EB754CC-3E17-45A1-ABB1-7AC50FDC2F37}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8EB754CC-3E17-45A1-ABB1-7AC50FDC2F37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40A7B1DB-4148-4B60-9E5A-025CC25A36A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40A7B1DB-4148-4B60-9E5A-025CC25A36A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40A7B1DB-4148-4B60-9E5A-025CC25A36A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40A7B1DB-4148-4B60-9E5A-025CC25A36A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{393EF512-431C-4509-ACDE-9B75591B6B6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{393EF512-431C-4509-ACDE-9B75591B6B6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{393EF512-431C-4509-ACDE-9B75591B6B6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{393EF512-431C-4509-ACDE-9B75591B6B6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{990E4A99-1AC2-4620-AD25-9C561663CEC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{990E4A99-1AC2-4620-AD25-9C561663CEC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{990E4A99-1AC2-4620-AD25-9C561663CEC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{990E4A99-1AC2-4620-AD25-9C561663CEC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79DC52F9-1B8B-47F2-AE9E-97EA8765CC78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79DC52F9-1B8B-47F2-AE9E-97EA8765CC78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79DC52F9-1B8B-47F2-AE9E-97EA8765CC78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79DC52F9-1B8B-47F2-AE9E-97EA8765CC78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70F24E39-AF77-49D8-A8A0-0A77684BDE72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70F24E39-AF77-49D8-A8A0-0A77684BDE72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70F24E39-AF77-49D8-A8A0-0A77684BDE72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70F24E39-AF77-49D8-A8A0-0A77684BDE72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8BC96BB-1AB5-4460-A60E-95D4C649E8C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8BC96BB-1AB5-4460-A60E-95D4C649E8C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8BC96BB-1AB5-4460-A60E-95D4C649E8C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8BC96BB-1AB5-4460-A60E-95D4C649E8C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {E5B42F3C-3A08-4A53-A1AF-D359FF8B3372}
+		SolutionGuid = {022F2B2F-5D8B-487D-B667-15305855BDCC}
 	EndGlobalSection
 EndGlobal
